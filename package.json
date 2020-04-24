@@ -4,7 +4,8 @@
   "description": "Harvesthru Server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint --fix . && echo 'Lint complete.'"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,17 @@
   "bugs": {
     "url": "https://github.com/Harvesthru-Inc/Harvesthru-Server/issues"
   },
-  "homepage": "https://github.com/Harvesthru-Inc/Harvesthru-Server#readme"
+  "homepage": "https://github.com/Harvesthru-Inc/Harvesthru-Server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.9.10"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-prettier": "^3.1.3",
+    "prettier": "^2.0.5"
+  }
 }
