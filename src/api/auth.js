@@ -1,11 +1,12 @@
 // Install dependencies
 const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcryptjs');
-const auth = require('../middleware/auth');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
+
+const router = express.Router();
+const auth = require('../middleware/auth');
 const User = require('../models/User');
 
 // @route    GET api/auth
@@ -28,10 +29,11 @@ router.post(
   '/login',
   [
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required').exists()
+    check('password', 'Password is required').exists(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
@@ -39,7 +41,7 @@ router.post(
     const { email, password } = req.body;
 
     try {
-      let user = await User.findOne({ email });
+      const user = await User.findOne({ email });
 
       if (!user) {
         return res
@@ -57,8 +59,8 @@ router.post(
 
       const payload = {
         user: {
-          id: user.id
-        }
+          id: user.id,
+        },
       };
 
       jwt.sign(

@@ -1,12 +1,12 @@
 const express = require('express');
-const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
-
 const User = require('../models/User');
+
+const router = express.Router();
 
 // @route    POST api/users
 // @desc     Register user
@@ -14,17 +14,18 @@ const User = require('../models/User');
 router.post(
   '/register',
   [
-    check('name', 'Name is required')
-      .not()
-      .isEmpty(),
-    check('name', "Username must be less than 64 characters").isLength({max: 64}),
+    check('name', 'Name is required').not().isEmpty(),
+    check('name', 'Username must be less than 64 characters').isLength({
+      max: 64,
+    }),
     check('email', 'Please include a valid email').isEmail(),
-    check('email', 'Email must be less than 320 characters').isLength({max: 320}),
+    check('email', 'Email must be less than 320 characters').isLength({
+      max: 320,
+    }),
     check(
       'password',
       'Please enter a password with 6 or more characters'
-    ).isLength({ min: 6 })
-
+    ).isLength({ min: 6 }),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -46,14 +47,14 @@ router.post(
       const avatar = gravatar.url(email, {
         s: '200',
         r: 'pg',
-        d: 'mm'
+        d: 'mm',
       });
 
       user = new User({
         name,
         email,
         avatar,
-        password
+        password,
       });
 
       const salt = await bcrypt.genSalt(10);
@@ -64,8 +65,8 @@ router.post(
 
       const payload = {
         user: {
-          id: user.id
-        }
+          id: user.id,
+        },
       };
 
       jwt.sign(
