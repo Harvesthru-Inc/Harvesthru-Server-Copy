@@ -19,8 +19,8 @@ app.use(express.json({ extended: false }));
 app.use('/api/users', users);
 app.use('/api/auth', auth);
 app.use('/api/profile', profile);
-app.use('/', (res, err) => {
-	res.send("hi");
+app.use('/', (req, res) => {
+	res.send("Harvesthru Server is running!");
 });
 
 // Serve static assets in production
