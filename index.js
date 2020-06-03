@@ -1,4 +1,5 @@
 // Install Neccessary dependencies
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 
@@ -20,7 +21,7 @@ app.use('/api/users', users);
 app.use('/api/auth', auth);
 app.use('/api/profile', profile);
 app.use('/', (req, res) => {
-	res.send("Harvesthru Server is running!");
+  res.send('Harvesthru Server is running!');
 });
 
 // Serve static assets in production

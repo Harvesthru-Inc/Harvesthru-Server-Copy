@@ -1,11 +1,9 @@
 // Neccessary dependencies, get mongoURI connect string
 const mongoose = require('mongoose');
-const config = require('config');
 
-console.log(config);
+const db = process.env.MONGO_URI;
 
-const db = config.get('mongoURI');
-// asunc function to connect db to atlas in cloud
+// async function to connect db to atlas in cloud
 const connectDB = async () => {
   try {
     await mongoose.connect(db, {
