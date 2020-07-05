@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const User = require('./User');
-const Listing = require('./Listing');
 
 const FarmSchema = new mongoose.Schema({
   title: {
@@ -11,30 +9,42 @@ const FarmSchema = new mongoose.Schema({
   description: {
     type: String,
   },
-  hours: {
-    type: [Date],
-    required: true,
-  },
+  hours: [
+    {
+      type: Date,
+      required: true,
+    },
+  ],
   owner: {
-    type: User,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   rating: {
     type: Number,
     required: true,
   },
-  reviews: {
-    type: [String],
-  },
-  tags: {
-    type: [String],
-  },
-  listings: {
-    type: [Listing],
-  },
-  photos: {
-    type: [String],
-  },
+  reviews: [
+    {
+      type: String,
+    },
+  ],
+  tags: [
+    {
+      type: String,
+    },
+  ],
+  listings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Listing',
+    },
+  ],
+  photos: [
+    {
+      type: String,
+    },
+  ],
   shareUrl: {
     type: String,
     required: true,
@@ -42,4 +52,4 @@ const FarmSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('order', FarmSchema);
+module.exports = mongoose.model('Farm', FarmSchema);

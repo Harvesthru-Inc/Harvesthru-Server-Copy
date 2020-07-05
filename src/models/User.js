@@ -1,21 +1,21 @@
 const mongoose = require('mongoose');
-const Order = require('./Order');
-const Farm = require('./Farm');
-const Post = require('./Post');
 
 const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
+    trim: true,
   },
   lastName: {
     type: String,
     required: true,
+    trim: true,
   },
   username: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
   },
   password: {
     type: String,
@@ -25,42 +25,63 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    trim: true,
   },
   phoneNumber: {
     type: String,
     required: true,
     unique: true,
   },
-  orders: {
-    type: [Order],
-  },
+  orders: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order',
+    },
+  ],
   location: {
     type: JSON,
   },
-  farms: {
-    type: [Farm],
-  },
-  followers: {
-    type: [this],
-  },
-  following: {
-    type: [this],
-  },
+  farms: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Farm',
+    },
+  ],
+  followers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
   bio: {
     type: String,
   },
-  photos: {
-    type: [String],
-  },
-  favoriteFarms: {
-    type: [Farm],
-  },
+  photos: [
+    {
+      type: String,
+    },
+  ],
+  favoriteFarms: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Farm',
+    },
+  ],
   paymentInfo: {
     type: JSON,
   },
-  posts: {
-    type: [Post],
-  },
+  posts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Post',
+    },
+  ],
   oneSignalPlayerId: {
     type: String,
     required: true,
@@ -76,4 +97,4 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('user', UserSchema);
+module.exports = mongoose.model('User', UserSchema);

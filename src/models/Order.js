@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
-const OrderItem = require('./OrderItem');
-const Farm = require('./Farm');
-const User = require('./User');
 
 const OrderSchema = new mongoose.Schema({
   orderItems: {
-    type: [OrderItem],
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'OrderItem',
     required: true,
   },
   status: {
@@ -13,7 +11,8 @@ const OrderSchema = new mongoose.Schema({
     required: true,
   },
   farm: {
-    type: Farm,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Farm',
     required: true,
   },
   totalPrice: {
@@ -21,9 +20,10 @@ const OrderSchema = new mongoose.Schema({
     required: true,
   },
   buyer: {
-    type: User,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
 });
 
-module.exports = mongoose.model('order', OrderSchema);
+module.exports = mongoose.model('Order', OrderSchema);

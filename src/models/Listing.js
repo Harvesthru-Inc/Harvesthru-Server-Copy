@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Farm = require('./Farm');
 
 const ListingSchema = new mongoose.Schema({
   name: {
@@ -13,18 +12,23 @@ const ListingSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  photos: {
-    type: [String],
-  },
+  photos: [
+    {
+      type: String,
+    },
+  ],
   coverPhoto: {
     type: String,
     required: true,
   },
-  tags: {
-    type: [String],
-  },
+  tags: [
+    {
+      type: String,
+    },
+  ],
   farm: {
-    type: Farm,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Farm',
     required: true,
   },
   unit: {
@@ -40,4 +44,4 @@ const ListingSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('order', ListingSchema);
+module.exports = mongoose.model('Listing', ListingSchema);

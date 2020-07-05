@@ -1,8 +1,7 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const config = require('config');
 
-module.exports = async function (req, res, next) {
+module.exports = async (req, res, next) => {
   // Get token from header
   const token = req.header('x-auth-token');
 
@@ -25,4 +24,6 @@ module.exports = async function (req, res, next) {
     console.error('something wrong with auth middleware');
     res.status(500).json({ msg: 'Server Error' });
   }
+
+  return true;
 };
