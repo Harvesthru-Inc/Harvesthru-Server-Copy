@@ -1,9 +1,10 @@
-// Neccessary dependencies, get mongoURI connect string
+// Initialize mongoose
 const mongoose = require('mongoose');
 
+// Get DB URL
 const db = process.env.MONGO_URI;
 
-// async function to connect db to atlas in cloud
+// Connect to MongoDB
 const connectDB = async () => {
   try {
     await mongoose.connect(db, {
@@ -13,12 +14,14 @@ const connectDB = async () => {
       useUnifiedTopology: true,
     });
 
+    // Connected successfully
     console.log('MongoDB Connected...');
   } catch (err) {
+    // Connection error
     console.error(err.message);
-    // Exit process with failure
     process.exit(1);
   }
 };
-// export function so server can use
+
+// Export connect function
 module.exports = connectDB;

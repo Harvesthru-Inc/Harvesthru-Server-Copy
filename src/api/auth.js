@@ -1,22 +1,22 @@
-// Install dependencies
+// Import libraries
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const gravatar = require('gravatar');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
-
-const router = express.Router();
 const auth = require('../middleware/auth');
 const User = require('../models/User');
+
+// Initialize router
+const router = express.Router();
 
 // @route    GET api/auth
 // @desc     Test route
 // @access   Public
 router.get('/', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
-    res.json(user);
+    res.send('hello');
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -157,4 +157,5 @@ router.post(
   }
 );
 
+// Export router
 module.exports = router;

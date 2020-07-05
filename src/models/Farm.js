@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Farm model
 const FarmSchema = new mongoose.Schema({
   title: {
     type: String,

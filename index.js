@@ -1,10 +1,12 @@
-// Install Neccessary dependencies
+// Configure .env
 require('dotenv').config();
 
+// Import libraries
 const express = require('express');
 const apiRoutes = require('./src/api');
 const connectDB = require('./config/db');
 
+// Get express
 const app = express();
 
 // Connect Database, see config folder for implementation
@@ -13,13 +15,15 @@ connectDB();
 // Init Middleware
 app.use(express.json({ extended: false }));
 
-// Define Routes
+// Api routes
 app.use('/api', apiRoutes);
+
+// Main route
 app.use('/', (req, res) => {
   res.send('Harvesthru Server is running!');
 });
 
-// init port for listening
+// Init port for listening
 const PORT = process.env.PORT || 8000;
 
 // Listen on said port
