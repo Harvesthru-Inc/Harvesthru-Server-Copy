@@ -1,4 +1,9 @@
+// Import libraries
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+
+// Define salt factor
+const SALT_WORK_FACTOR = 10;
 
 // User model
 const UserSchema = new mongoose.Schema({
@@ -14,7 +19,6 @@ const UserSchema = new mongoose.Schema({
   },
   username: {
     type: String,
-    required: true,
     unique: true,
     trim: true,
   },
@@ -85,7 +89,6 @@ const UserSchema = new mongoose.Schema({
   ],
   oneSignalPlayerId: {
     type: String,
-    required: true,
   },
   facebookId: {
     type: String,
@@ -98,4 +101,33 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
+// Hash passwords before saving
+UserSchema.pre('save', function (next) {
+  // Hash password if modified
+  if (!this.isModified('password')) return next();
+
+  // Generate salt
+  bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
+    if (err) return next(err);
+
+    // Hash password using salt
+    bcrypt.hash(this.password, salt, (error, hash) => {
+      if (error) return next(error);
+
+      // Replace with hash
+      this.password = hash;
+      next();
+    });
+  });
+});
+
+// Compare passwords
+UserSchema.methods.comparePassword = (candidatePassword, cb) => {
+  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+    if (err) return cb(err);
+    cb(null, isMatch);
+  });
+};
+
+// Export user model
 module.exports = mongoose.model('User', UserSchema);

@@ -13,7 +13,6 @@ const FarmSchema = new mongoose.Schema({
   hours: [
     {
       type: Date,
-      required: true,
     },
   ],
   owner: {
@@ -23,7 +22,6 @@ const FarmSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
-    required: true,
   },
   reviews: [
     {
@@ -48,7 +46,6 @@ const FarmSchema = new mongoose.Schema({
   ],
   shareUrl: {
     type: String,
-    required: true,
     unique: true,
   },
 });
