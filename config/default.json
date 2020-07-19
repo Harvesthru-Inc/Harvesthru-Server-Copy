@@ -1,5 +1,5 @@
 {
-  "jwtSecret": "secret",
+  "jwtSecret": "Entrepreneurs007",
   "githubClientId": "",
   "githubSecret": ""
 }

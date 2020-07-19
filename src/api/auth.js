@@ -2,7 +2,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const gravatar = require('gravatar');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
 const auth = require('../middleware/auth');
@@ -33,14 +32,17 @@ router.post(
     check('password', 'Password is required').exists(),
   ],
   async (req, res) => {
+    // Return validation errors if any exist
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // Get the email and password from login request
     const { email, password } = req.body;
 
+    // Find user in database
     try {
       const user = await User.findOne({ email });
 
@@ -50,6 +52,7 @@ router.post(
           .json({ errors: [{ msg: 'Invalid Credentials' }] });
       }
 
+      // Match password
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
@@ -58,55 +61,66 @@ router.post(
           .json({ errors: [{ msg: 'Invalid Credentials' }] });
       }
 
+      // If user exists, generate auth payload
       const payload = {
         user: {
           id: user.id,
         },
       };
 
+      // Sign JWT and return as response
       jwt.sign(
         payload,
         config.get('jwtSecret'),
         { expiresIn: 360000 },
         (err, token) => {
           if (err) throw err;
-          res.json({ token });
+          return res.json({ token });
         }
       );
+
+      // Return use as response
+      return res.json({ user });
     } catch (err) {
+      // Return error
       console.error(err.message);
-      res.status(500).send('Server error');
+      return res.status(500).send('Server error');
     }
   }
 );
 
-// @route    POST api/users
-// @desc     Register user
+// @route    POST api/auth/register
+// @desc     Register user in database
 // @access   Public
 router.post(
   '/register',
   [
-    check('name', 'Name is required').not().isEmpty(),
-    check('name', 'Username must be less than 64 characters').isLength({
-      max: 64,
-    }),
-    check('email', 'Please include a valid email').isEmail(),
-    check('email', 'Email must be less than 320 characters').isLength({
-      max: 320,
-    }),
-    check(
-      'password',
-      'Please enter a password with 6 or more characters'
-    ).isLength({ min: 6 }),
+    // Check firstName, lastName, email valid
+    check('firstName', 'firstName is required').not().isEmpty(),
+    check('lastName', 'lastName is required').not().isEmpty(),
+    check('email', 'please include a valid email').isEmail(),
   ],
   async (req, res) => {
+    // Get errors
     const errors = validationResult(req);
+
+    // If there are errors, return error
     if (!errors.isEmpty()) {
+      console.log(errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password } = req.body;
+    // Get post request body
+    const {
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+      phoneNumber,
+    } = req.body;
 
+    // Try to find existing user, if exists, then return error
     try {
       let user = await User.findOne({ email });
 
@@ -116,43 +130,38 @@ router.post(
           .json({ errors: [{ msg: 'User already exists' }] });
       }
 
-      const avatar = gravatar.url(email, {
-        s: '200',
-        r: 'pg',
-        d: 'mm',
-      });
-
+      // Create new user in database
       user = new User({
-        name,
-        email,
-        avatar,
+        firstName,
+        lastName,
+        username,
         password,
+        email,
+        phoneNumber,
       });
 
-      const salt = await bcrypt.genSalt(10);
-
-      user.password = await bcrypt.hash(password, salt);
-
+      // Save the user
       await user.save();
 
+      // Get auth payload
       const payload = {
         user: {
           id: user.id,
         },
       };
 
-      jwt.sign(
-        payload,
-        config.get('jwtSecret'),
-        { expiresIn: 360000 },
-        (err, token) => {
-          if (err) throw err;
-          res.json({ token });
-        }
-      );
+      // Generate JWT token
+      const token = jwt.sign(payload, config.get('jwtSecret'), {
+        expiresIn: 360000,
+      });
+
+      console.log(token);
+
+      return res.json({ token });
     } catch (err) {
+      // Return error
       console.error(err.message);
-      res.status(500).send('Server error');
+      return res.status(500).send('Server error');
     }
   }
 );
