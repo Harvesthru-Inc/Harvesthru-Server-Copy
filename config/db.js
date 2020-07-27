@@ -42,8 +42,9 @@ const connectDB = async () => {
       newUser.save(function (err) {
         if (err) return console.log(err);
         return console.log('User created!');
-      }); */
-      /* User.find({ firstName: 'Howard' }, (err, data) => {
+      });
+
+      User.find({ firstName: 'Howard' }, (err, data) => {
         if (err) return console.log(err);
         if (data && data.length) {
           // Create new farm
@@ -52,7 +53,7 @@ const connectDB = async () => {
             owner: data[0],
           });
 
-          // Save user
+          // Save farm
           newFarm.save((error) => {
             if (error) return console.log(err);
             return console.log('Farm created!');

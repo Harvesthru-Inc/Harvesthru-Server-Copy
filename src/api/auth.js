@@ -96,8 +96,11 @@ router.post(
   '/register',
   [
     // Check firstName, lastName, email valid
-    check('firstName', 'firstName is required').not().isEmpty(),
-    check('lastName', 'lastName is required').not().isEmpty(),
+    check('firstName', 'First Name cannot be blank!').not().isEmpty(),
+    check('lastName', 'Last Name cannot be blank!').not().isEmpty(),
+    check('username', 'Username cannot be blank!').not().isEmpty(),
+    check('email', 'Email cannot be blank!').not().isEmpty(),
+    check('password', 'Password cannot be blank!').not().isEmpty(),
     check('email', 'please include a valid email').isEmail(),
   ],
   async (req, res) => {
@@ -106,28 +109,39 @@ router.post(
 
     // If there are errors, return error
     if (!errors.isEmpty()) {
+      // Get first error
+      const firstError = errors.array()[0].msg;
+
+      // Log and throw error
       console.log(errors.array());
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).send(firstError);
     }
 
     // Get post request body
-    const {
-      firstName,
-      lastName,
-      username,
-      email,
-      password,
-      phoneNumber,
-    } = req.body;
+    const { firstName, lastName, username, email, password } = req.body;
 
     // Try to find existing user, if exists, then return error
     try {
-      let user = await User.findOne({ email });
+      // Check that the username doesn't already exist
+      let user = await User.findOne({ username });
 
+      // If user exists, return error
       if (user) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: 'User already exists' }] });
+        return res.status(400).send('Username already exists!');
+      }
+
+      // Check that the email doesn't already exist
+      user = await User.findOne({
+        $or: [
+          { email },
+          { email: email.toLowerCase() },
+          { email: email.toUpperCase() },
+        ],
+      });
+
+      // If user exists, return error
+      if (user) {
+        return res.status(400).send('Email already exists!');
       }
 
       // Create new user in database
@@ -137,7 +151,6 @@ router.post(
         username,
         password,
         email,
-        phoneNumber,
       });
 
       // Save the user
@@ -155,13 +168,12 @@ router.post(
         expiresIn: 360000,
       });
 
-      console.log(token);
-
+      // Send the JWT token to front end
       return res.json({ token });
     } catch (err) {
       // Return error
       console.error(err.message);
-      return res.status(500).send('Server error');
+      return res.status(500).send(err.message);
     }
   }
 );
