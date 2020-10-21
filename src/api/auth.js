@@ -15,7 +15,7 @@ const router = express.Router();
 // @access   Public
 router.get('/', auth, async (req, res) => {
   try {
-    res.send('hello');
+    res.send('hello stranger :)');
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -35,8 +35,14 @@ router.post(
     // Return validation errors if any exist
     const errors = validationResult(req);
 
+    // If there are errors, return error
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      // Get first error
+      const firstError = errors.array()[0].msg;
+
+      // Log and throw error
+      console.log(errors.array());
+      return res.status(400).send(firstError);
     }
 
     // Get the email and password from login request
@@ -46,19 +52,17 @@ router.post(
     try {
       const user = await User.findOne({ email });
 
+      // If not found, say invalid username
       if (!user) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: 'Invalid Credentials' }] });
+        return res.status(400).send('Invalid username or password!');
       }
 
       // Match password
       const isMatch = await bcrypt.compare(password, user.password);
 
+      // If password does not match, return invalid
       if (!isMatch) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: 'Invalid Credentials' }] });
+        return res.status(400).send('Invalid username or password!');
       }
 
       // If user exists, generate auth payload
@@ -69,22 +73,16 @@ router.post(
       };
 
       // Sign JWT and return as response
-      jwt.sign(
-        payload,
-        config.get('jwtSecret'),
-        { expiresIn: 360000 },
-        (err, token) => {
-          if (err) throw err;
-          return res.json({ token });
-        }
-      );
+      const token = await jwt.sign(payload, config.get('jwtSecret'), {
+        expiresIn: 360000,
+      });
 
-      // Return use as response
-      return res.json({ user });
+      // Send the JWT token to front end
+      return res.json({ token, user });
     } catch (err) {
       // Return error
       console.error(err.message);
-      return res.status(500).send('Server error');
+      return res.status(500).send(err.message);
     }
   }
 );
@@ -98,10 +96,9 @@ router.post(
     // Check firstName, lastName, email valid
     check('firstName', 'First Name cannot be blank!').not().isEmpty(),
     check('lastName', 'Last Name cannot be blank!').not().isEmpty(),
-    check('username', 'Username cannot be blank!').not().isEmpty(),
     check('email', 'Email cannot be blank!').not().isEmpty(),
     check('password', 'Password cannot be blank!').not().isEmpty(),
-    check('email', 'please include a valid email').isEmail(),
+    check('email', 'Please include a valid email').isEmail(),
   ],
   async (req, res) => {
     // Get errors
@@ -118,20 +115,12 @@ router.post(
     }
 
     // Get post request body
-    const { firstName, lastName, username, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     // Try to find existing user, if exists, then return error
     try {
-      // Check that the username doesn't already exist
-      let user = await User.findOne({ username });
-
-      // If user exists, return error
-      if (user) {
-        return res.status(400).send('Username already exists!');
-      }
-
       // Check that the email doesn't already exist
-      user = await User.findOne({
+      let user = await User.findOne({
         $or: [
           { email },
           { email: email.toLowerCase() },
@@ -148,7 +137,6 @@ router.post(
       user = new User({
         firstName,
         lastName,
-        username,
         password,
         email,
       });
@@ -164,7 +152,7 @@ router.post(
       };
 
       // Generate JWT token
-      const token = jwt.sign(payload, config.get('jwtSecret'), {
+      const token = await jwt.sign(payload, config.get('jwtSecret'), {
         expiresIn: 360000,
       });
 

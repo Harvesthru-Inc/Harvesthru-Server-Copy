@@ -9,6 +9,7 @@ const ListingSchema = new mongoose.Schema(
     },
     description: {
       type: String,
+      default: null,
     },
     pricePerUnit: {
       type: Number,
@@ -35,6 +36,7 @@ const ListingSchema = new mongoose.Schema(
     },
     unit: {
       type: String,
+      default: null,
     },
     status: {
       type: String,
@@ -45,7 +47,7 @@ const ListingSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, autoGenerate: true }
 );
 
 module.exports = mongoose.model('Listing', ListingSchema);

@@ -10,12 +10,16 @@ const FarmSchema = new mongoose.Schema(
     },
     description: {
       type: String,
+      default: null,
     },
-    hours: [
-      {
-        type: Date,
-      },
-    ],
+    hours: {
+      type: JSON,
+      default: null,
+    },
+    location: {
+      type: JSON,
+      default: null,
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -23,10 +27,16 @@ const FarmSchema = new mongoose.Schema(
     },
     rating: {
       type: Number,
+      default: null,
+    },
+    ratingCount: {
+      type: Number,
+      default: 0,
     },
     reviews: [
       {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
       },
     ],
     tags: [
@@ -48,9 +58,10 @@ const FarmSchema = new mongoose.Schema(
     shareUrl: {
       type: String,
       unique: true,
+      default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true, autoGenerate: true }
 );
 
 module.exports = mongoose.model('Farm', FarmSchema);

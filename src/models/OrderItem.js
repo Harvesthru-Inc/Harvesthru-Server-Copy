@@ -17,7 +17,7 @@ const OrderItemSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, autoGenerate: true }
 );
 
 module.exports = mongoose.model('OrderItem', OrderItemSchema);

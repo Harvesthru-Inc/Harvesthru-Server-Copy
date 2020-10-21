@@ -18,12 +18,6 @@ const UserSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    username: {
-      type: String,
-      unique: true,
-      required: true,
-      trim: true,
-    },
     password: {
       type: String,
       required: true,
@@ -37,6 +31,15 @@ const UserSchema = new mongoose.Schema(
     phoneNumber: {
       type: String,
       unique: true,
+      default: null,
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: {
+      type: String,
+      default: null,
     },
     orders: [
       {
@@ -46,8 +49,15 @@ const UserSchema = new mongoose.Schema(
     ],
     location: {
       type: JSON,
+      default: null,
     },
     farms: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Farm',
+      },
+    ],
+    likedFarms: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Farm',
@@ -67,6 +77,7 @@ const UserSchema = new mongoose.Schema(
     ],
     bio: {
       type: String,
+      default: null,
     },
     photos: [
       {
@@ -81,6 +92,7 @@ const UserSchema = new mongoose.Schema(
     ],
     paymentInfo: {
       type: JSON,
+      default: null,
     },
     posts: [
       {
@@ -91,21 +103,25 @@ const UserSchema = new mongoose.Schema(
     oneSignalPlayerId: {
       type: String,
       unique: true,
+      default: null,
     },
     facebookId: {
       type: String,
       unique: true,
+      default: null,
     },
     googleId: {
       type: String,
       unique: true,
+      default: null,
     },
     avatar: {
       type: String,
       unique: true,
+      default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true, autoGenerate: true }
 );
 
 // Hash passwords before saving
